@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+
+# Media
+media/
+!media/.gitkeep
+
+# Project specific
+app/core/__pycache__/
+migrations/__pycache__/

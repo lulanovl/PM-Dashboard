@@ -1,0 +1,32 @@
+# Project Management Dashboard Tasks
+
+- [ ] **Project Setup**
+    - [ ] Initialize project structure (FastAPI, Poetry/Pipenv) <!-- id: 0 -->
+    - [ ] Setup Database (PostgreSQL) and SQLAlchemy/Alembic <!-- id: 1 -->
+    - [ ] Configure Environment Variables <!-- id: 2 -->
+- [ ] **Authentication Module**
+    - [ ] Implement User Model <!-- id: 3 -->
+    - [ ] Implement JWT Utility (generation, verification) <!-- id: 4 -->
+    - [ ] Create `POST /auth` (Register) <!-- id: 5 -->
+    - [ ] Create `POST /login` (Login) <!-- id: 6 -->
+- [ ] **Projects Module**
+    - [ ] Implement Project Model & User-Project Association (Owner/Participant) <!-- id: 7 -->
+    - [ ] Create `POST /projects` (Create Project) <!-- id: 8 -->
+    - [ ] Create `GET /projects` (List User's Projects) <!-- id: 9 -->
+    - [ ] Create `GET /project/{id}/info` (Get Project Details) <!-- id: 10 -->
+    - [ ] Create `PUT /project/{id}/info` (Update Project) <!-- id: 11 -->
+    - [ ] Create `DELETE /project/{id}` (Delete Project) <!-- id: 12 -->
+- [ ] **Documents Module**
+    - [ ] Implement Document Model <!-- id: 13 -->
+    - [ ] Implement File Upload Logic (Local storage or S3-compatible, assuming local for now based on prompt simplicity) <!-- id: 14 -->
+    - [ ] Create `POST /project/{id}/documents` (Upload) <!-- id: 15 -->
+    - [ ] Create `GET /project/{id}/documents` (List Documents) <!-- id: 16 -->
+    - [ ] Create `GET /document/{id}` (Download) <!-- id: 17 -->
+    - [ ] Create `PUT /document/{id}` (Update Metadata/File) <!-- id: 18 -->
+    - [ ] Create `DELETE /document/{id}` (Delete) <!-- id: 19 -->
+- [ ] **Sharing & Permissions**
+    - [ ] Implement Permission Checks (Owner vs Participant) <!-- id: 20 -->
+    - [ ] Create `POST /project/{id}/invite` (Invite User by login) <!-- id: 21 -->
+    - [ ] (Optional) Create `GET /project/{id}/share` (Generate Share Link) <!-- id: 22 -->
+- [ ] **Verification**
+    - [ ] Manual API Testing / Integration Tests <!-- id: 23 -->
