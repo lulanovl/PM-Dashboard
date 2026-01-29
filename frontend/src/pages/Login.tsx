@@ -106,7 +106,11 @@ const Login = () => {
                             </Button>
                             <div className="text-sm text-center text-muted-foreground">
                                 Don't have an account?{' '}
-                                <Link to="/register" className="text-primary hover:text-primary/80 font-medium underline-offset-4 hover:underline">
+                                <Link
+                                    to="/register"
+                                    state={{ from: location.state?.from }}
+                                    className="text-primary hover:text-primary/80 font-medium underline-offset-4 hover:underline"
+                                >
                                     Register
                                 </Link>
                             </div>

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
@@ -14,6 +14,7 @@ const Register = () => {
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const validatePassword = (password: string): string | null => {
         if (password.length < 8) {
@@ -56,7 +57,7 @@ const Register = () => {
                 password,
                 repeat_password: repeatPassword
             });
-            navigate('/login');
+            navigate('/login', { state: { from: location.state?.from } });
         } catch (err: any) {
             // Handle HTTP 422 Validation Errors (from Pydantic)
             if (err.response?.status === 422) {
