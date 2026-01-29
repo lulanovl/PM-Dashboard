@@ -15,10 +15,35 @@ const Register = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
+    const validatePassword = (password: string): string | null => {
+        if (password.length < 8) {
+            return "Password must be at least 8 characters long";
+        }
+        if (!/[A-Z]/.test(password)) {
+            return "Password must contain at least one uppercase letter";
+        }
+        if (!/[a-z]/.test(password)) {
+            return "Password must contain at least one lowercase letter";
+        }
+        if (!/[^a-zA-Z0-9]/.test(password)) {
+            return "Password must contain at least one special character";
+        }
+        return null; // Valid
+    };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+
+        // Password Match Validation
         if (password !== repeatPassword) {
             setError("Passwords do not match");
+            return;
+        }
+
+        // Password Strength Validation
+        const passwordError = validatePassword(password);
+        if (passwordError) {
+            setError(passwordError);
             return;
         }
 
@@ -33,7 +58,24 @@ const Register = () => {
             });
             navigate('/login');
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Failed to register');
+            // Handle HTTP 422 Validation Errors (from Pydantic)
+            if (err.response?.status === 422) {
+                // Pydantic validation errors structure: detail -> [ { loc, msg, type } ]
+                // We'll just show the first error message's 'msg'
+                const details = err.response.data.detail;
+                if (Array.isArray(details) && details.length > 0) {
+                    // Remove "Value error, " prefix if present (common in Pydantic v1, less so v2 but good safety)
+                    let msg = details[0].msg;
+                    if (msg.startsWith('Value error, ')) {
+                        msg = msg.substring(13);
+                    }
+                    setError(msg);
+                } else {
+                    setError('Invalid input data');
+                }
+            } else {
+                setError(err.response?.data?.detail || 'Failed to register');
+            }
         } finally {
             setIsSubmitting(false);
         }
