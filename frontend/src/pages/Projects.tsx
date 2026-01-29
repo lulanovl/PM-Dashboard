@@ -1,16 +1,44 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import type { Project } from '../types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { Plus, Folder, Calendar } from 'lucide-react';
+import { Plus, Folder, Calendar, Trash2 } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "../components/ui/Dialog"
+import { deleteProject } from '../services/api';
 
 const Projects = () => {
+    const { user } = useAuth();
     const [projects, setProjects] = useState<Project[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDeleteProject = async () => {
+        if (!projectToDelete) return;
+        setIsDeleting(true);
+        try {
+            await deleteProject(projectToDelete.id);
+            setProjects(projects.filter(p => p.id !== projectToDelete.id));
+            setProjectToDelete(null);
+        } catch (error) {
+            console.error('Failed to delete project:', error);
+            setError('Failed to delete project. You might not be the owner.');
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -91,15 +119,56 @@ const Projects = () => {
                                     {new Date(project.created_at).toLocaleDateString()}
                                 </div>
                             </CardContent>
-                            <CardFooter>
-                                <Button variant="secondary" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors" asChild>
+                            <CardFooter className="flex gap-2">
+                                <Button variant="secondary" className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors" asChild>
                                     <Link to={`/projects/${project.id}`}>View Details</Link>
                                 </Button>
+                                {/* Debug: {user?.id} vs {project.owner_id} */}
+                                {String(user?.id) === String(project.owner_id) && (
+                                    <Button
+                                        variant="destructive"
+                                        size="icon"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setProjectToDelete(project);
+                                        }}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                )}
                             </CardFooter>
                         </Card>
                     ))}
                 </div>
             )}
+
+
+            <Dialog open={!!projectToDelete} onOpenChange={(open) => !open && setProjectToDelete(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete Project</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to delete <span className="font-semibold text-foreground">{projectToDelete?.name}</span>?
+                            This action cannot be undone and will delete all associated documents.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setProjectToDelete(null)} disabled={isDeleting}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={handleDeleteProject} disabled={isDeleting}>
+                            {isDeleting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Deleting...
+                                </>
+                            ) : (
+                                'Delete Project'
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

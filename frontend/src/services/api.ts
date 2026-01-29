@@ -36,4 +36,12 @@ api.interceptors.response.use(
     }
 );
 
+export const deleteProject = async (id: number) => {
+    return api.delete(`/project/${id}`);
+};
+
+export const updateProject = async (id: number, data: { name?: string; description?: string }) => {
+    return api.put(`/project/${id}/info`, data);
+};
+
 export default api;

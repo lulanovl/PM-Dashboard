@@ -1,6 +1,6 @@
 
 import { useState, type FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { Button } from '../components/ui/Button';
@@ -16,6 +16,8 @@ const Login = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const to = location.state?.from?.pathname ? location.state.from.pathname + location.state.from.search : "/";
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -27,28 +29,15 @@ const Login = () => {
             const response = await api.post('/login', { username, password });
             const { access_token } = response.data;
 
-            // We need user details too. Ideally login returns it or we fetch it.
-            // For now, let's assume we can fetch it or just fake it until we hit the dashboard which will fetch it.
-            // But AuthContext expects user data immediately to set isAuthenticated. 
-            // The context handles fetching user on init, but on plain login call?
-            // Let's modify logic: login sets token, then we fetch user.
-
             localStorage.setItem('token', access_token);
 
             // Fetch user profile
-            // Checking backend routes... assuming /users/me exists or similar.
-            // If not, we might need to add it or use what we have.
-            // Wait, app/api/auth.py doesn't return user.
-            // Let's check if there is a users endpoint.
-            // For now, we will optimistically redirect or fetch.
-            // Just calling login function from context which might need update.
+            const userResponse = await api.get('/users/me');
+            const userData = userResponse.data;
+            console.log("Login: Fetched user data", userData);
 
-            // HACK: For this step, we'll manually set a user object since we know the username.
-            // Real app should have /users/me
-            const userData = { id: 0, email: '', is_active: true, is_superuser: false, username }; // types.ts update needed for username
-
-            login(access_token, userData as any); // Type assertion until we fix types
-            navigate('/');
+            login(access_token, userData);
+            navigate(to, { replace: true });
         } catch (err: any) {
             setError(err.response?.data?.detail || 'Failed to login');
         } finally {
@@ -88,6 +77,7 @@ const Login = () => {
                                     onChange={(e) => setUsername(e.target.value)}
                                     required
                                     className="bg-secondary/50 text-foreground border-transparent focus:border-primary transition-all duration-300"
+                                    name="username"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -98,6 +88,7 @@ const Login = () => {
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                     className="bg-secondary/50 text-foreground border-transparent focus:border-primary transition-all duration-300"
+                                    name="password"
                                 />
                             </div>
                         </CardContent>

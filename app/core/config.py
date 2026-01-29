@@ -4,6 +4,7 @@ from typing import Optional
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Project Management Dashboard"
     API_V1_STR: str = "/api/v1"
+    FRONTEND_URL: str = "http://localhost:5173"
     
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/pm_dashboard"

@@ -4,10 +4,11 @@ import api from '../services/api';
 import type { Project, Document } from '../types';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
-import { Loader2, File, Trash2, Download, Upload, ArrowLeft, Share2 } from 'lucide-react';
+import { Loader2, File, Trash2, Download, Upload, ArrowLeft, Share2, Pencil } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/Dialog';
 import { Input } from '../components/ui/Input';
 import ShareDialog from '../components/projects/ShareDialog';
+import EditProjectDialog from '../components/projects/EditProjectDialog';
 
 const ProjectDetails = () => {
     const { id } = useParams<{ id: string }>();
@@ -18,6 +19,7 @@ const ProjectDetails = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [isUploadOpen, setIsUploadOpen] = useState(false);
     const [isShareOpen, setIsShareOpen] = useState(false);
+    const [isEditOpen, setIsEditOpen] = useState(false);
     const [, setError] = useState('');
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -119,6 +121,9 @@ const ProjectDetails = () => {
                     <p className="text-lg text-muted-foreground max-w-2xl">{project.description || "No description provided."}</p>
                 </div>
                 <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setIsEditOpen(true)}>
+                        <Pencil className="mr-2 h-4 w-4" /> Edit
+                    </Button>
                     <Button variant="outline" onClick={() => setIsShareOpen(true)}>
                         <Share2 className="mr-2 h-4 w-4" /> Share
                     </Button>
@@ -205,6 +210,13 @@ const ProjectDetails = () => {
                 isOpen={isShareOpen}
                 onClose={() => setIsShareOpen(false)}
                 projectId={projectId}
+            />
+
+            <EditProjectDialog
+                isOpen={isEditOpen}
+                onClose={() => setIsEditOpen(false)}
+                project={project}
+                onUpdate={(updated) => setProject(updated)}
             />
         </div>
     );

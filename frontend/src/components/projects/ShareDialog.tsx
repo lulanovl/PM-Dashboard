@@ -128,7 +128,7 @@ const ShareDialog = ({ isOpen, onClose, projectId }: ShareDialogProps) => {
 
                         {generatedLink && (
                             <div className="mt-4 p-3 bg-secondary rounded-md flex items-center justify-between gap-2 overflow-hidden">
-                                <code className="text-xs text-foreground truncate flex-1">{generatedLink}</code>
+                                <code className="text-xs text-foreground break-all whitespace-pre-wrap flex-1">{generatedLink}</code>
                                 <Button size="icon" variant="ghost" type="button" onClick={copyToClipboard} className="h-6 w-6 shrink-0">
                                     {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
                                 </Button>

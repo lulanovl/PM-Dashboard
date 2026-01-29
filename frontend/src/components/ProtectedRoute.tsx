@@ -1,10 +1,11 @@
 
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute = () => {
     const { isAuthenticated, isLoading } = useAuth();
+    const location = useLocation();
 
     if (isLoading) {
         return (
@@ -14,7 +15,7 @@ const ProtectedRoute = () => {
         );
     }
 
-    return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+    return isAuthenticated ? <Outlet /> : <Navigate to="/login" state={{ from: location }} replace />;
 };
 
 export default ProtectedRoute;

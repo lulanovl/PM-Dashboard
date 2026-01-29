@@ -120,13 +120,18 @@ async def update_project(
         
     # Check access (Participant or Owner can modify)
     is_owner = project.owner_id == current_user.id
+    print(f"Update Project: Project {project_id}, Owner {project.owner_id}, Current User {current_user.id}, Is Owner: {is_owner}")
+    
     if not is_owner:
         query_part = select(ProjectParticipant).where(
             (ProjectParticipant.project_id == project_id) &
             (ProjectParticipant.user_id == current_user.id)
         )
         result_part = await db.execute(query_part)
-        if not result_part.scalars().first():
+        is_participant = result_part.scalars().first()
+        print(f"Update Project: Is Participant: {is_participant}")
+        
+        if not is_participant:
             raise HTTPException(status_code=403, detail="Not authorized to modify this project")
 
     if project_in.name is not None:
@@ -261,7 +266,7 @@ async def share_project(
     # The link should be to a frontend or an endpoint that handles the join.
     # Let's point to the GET /join endpoint we are about to create (or a hypothetical frontend URL)
     # Ideally should be a frontend URL. But for API-only project, maybe a GET request to API.
-    join_link = f"http://127.0.0.1:8000{settings.API_V1_STR}/join?token={token}"
+    join_link = f"{settings.FRONTEND_URL}/join?token={token}"
     
     # In a real app, we would send this via email.
     return {"message": f"Share link generated for {with_email}", "link": join_link}

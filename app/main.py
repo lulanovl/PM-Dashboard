@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api import auth, projects, documents
+from app.api import auth, projects, documents, users
 
 app = FastAPI(title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json")
 
@@ -18,6 +18,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["Authentication"])
 app.include_router(projects.router, prefix=settings.API_V1_STR, tags=["Projects"])
 app.include_router(documents.router, prefix=settings.API_V1_STR, tags=["Documents"])
+app.include_router(users.router, prefix=settings.API_V1_STR + "/users", tags=["Users"])
 
 @app.get("/")
 async def root():
